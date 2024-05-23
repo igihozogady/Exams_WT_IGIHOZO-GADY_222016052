@@ -1,0 +1,133 @@
+<?php 
+include_once("./connection/connection.php");
+
+// Initialize variables to hold designer data if editing
+$designerId = "Auto";
+$fullName = "";
+$email = "";
+$password = "";
+$speciality = "";
+
+// Check if ID is provided for editing
+if(isset($_GET['id'])) {
+    $designerId = $_GET['id'];
+    // Fetch designer data from the database
+    $sql = "SELECT * FROM designers WHERE Id = $designerId";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        // Assign fetched data to variables
+        $fullName = $row['Names'];
+        $email = $row['Email'];
+        $password = $row['Password'];
+        $speciality = $row['Speciality'];
+    }
+}
+?>
+
+<div class="page">
+    <div class="left">
+        <h1><?php echo isset($_GET['id']) ? 'Edit Designer' : 'Add New Designer'; ?></h1>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Manage Designers</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a class="active" href="#"><?php echo isset($_GET['id']) ? 'Edit Designer' : 'Add New Designer'; ?></a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container2">
+    <form id="designerForm" action="insert_designer.php" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="designerId">Designer ID:</label>
+            <input type="text" id="designerId" name="designerId" class="form-control" value="<?php echo $designerId; ?>" readonly>
+        </div>
+        <div class="form-group">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" class="form-control" value="<?php echo $fullName; ?>">
+            <div id="fullNameError" class="error-message"></div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" value="<?php echo $email; ?>">
+            <div id="emailError" class="error-message"></div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" value="<?php echo $password; ?>">
+            <div id="passwordError" class="error-message"></div>
+        </div>
+        <div class="form-group">
+            <label for="speciality">Speciality:</label>
+            <input type="text" id="speciality" name="speciality" class="form-control" value="<?php echo $speciality; ?>">
+            <div id="specialityError" class="error-message"></div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn-submit"><?php echo isset($_GET['id']) ? 'Update' : 'Submit'; ?></button>
+            <button type="reset" class="btn-reset">Reset</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById("designerForm").addEventListener("submit", function(event) {
+        if (!validateForm()) {
+            event.preventDefault();
+        }
+    });
+
+    function validateForm() {
+        var isValid = true;
+
+        var fullName = document.getElementById("fullName").value.trim();
+        var email = document.getElementById("email").value.trim();
+        var password = document.getElementById("password").value.trim();
+        var speciality = document.getElementById("speciality").value.trim();
+
+        // Validate full name
+        if (fullName === "") {
+            document.getElementById("fullNameError").innerText = "Full Name is required";
+            document.getElementById("fullName").style.borderColor = "red";
+            isValid = false;
+        } else {
+            document.getElementById("fullNameError").innerText = "";
+            document.getElementById("fullName").style.borderColor = "";
+        }
+
+        // Validate email
+        if (email === "") {
+            document.getElementById("emailError").innerText = "Email is required";
+            document.getElementById("email").style.borderColor = "red";
+            isValid = false;
+        } else {
+            document.getElementById("emailError").innerText = "";
+            document.getElementById("email").style.borderColor = "";
+        }
+
+        // Validate password
+        if (password === "") {
+            document.getElementById("passwordError").innerText = "Password is required";
+            document.getElementById("password").style.borderColor = "red";
+            isValid = false;
+        } else {
+            document.getElementById("passwordError").innerText = "";
+            document.getElementById("password").style.borderColor = "";
+        }
+
+        // Validate speciality
+        if (speciality === "") {
+            document.getElementById("specialityError").innerText = "Speciality is required";
+            document.getElementById("speciality").style.borderColor = "red";
+            isValid = false;
+        } else {
+            document.getElementById("specialityError").innerText = "";
+            document.getElementById("speciality").style.borderColor = "";
+        }
+
+        return isValid;
+    }
+</script>
